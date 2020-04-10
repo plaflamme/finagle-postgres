@@ -109,7 +109,7 @@ lazy val `finagle-postgres-integration` = project
 
 lazy val test9 = integrationTests("9.6.17")
 lazy val test10 = integrationTests("10.11.0") // 10.12.0 fails to find libz for some reason
-lazy val test11 = integrationTests("11.7.0")
+lazy val test11 = integrationTests("11.6.0")
 
 def integrationTests(v: String) = {
   val majorVersion = v.split('.') match {
@@ -124,6 +124,10 @@ def integrationTests(v: String) = {
         // TODO
         "io.zonky.test.postgres" % "embedded-postgres-binaries-darwin-amd64" % v % "test",
       )
+    )
+    .settings(
+      parallelExecution in Test := false,
+      javaOptions in Test += "-Duser.timezone=UTC" // TODO: investigate and submit a test to demonstrate that timezone handling is broken.
     )
     .settings(
       Test / sourceGenerators += Def.task {
